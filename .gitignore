@@ -1,3 +1,10 @@
+# Ignore all files with the extension
+*zip
+*csv
+*PNG
+*png
+
+
 # Created by https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,jupyternotebooks
 
