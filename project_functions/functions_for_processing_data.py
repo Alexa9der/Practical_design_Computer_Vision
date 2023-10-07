@@ -77,7 +77,7 @@ def validation_data_generators(path_to_Train="data/Train", path_to_Validation="d
             else:
                 print(f"File not found: {train_path}")
 
-def generator(train: bool, test: bool, generator_batch_size = 32, generator_image_size = (128, 128) ):
+def generator(train: bool, test: bool, image_preprocessing: bool = None, generator_batch_size = 32, generator_image_size = (128, 128) ):
     """
     Generate data generators for training and testing.
 
@@ -101,7 +101,7 @@ def generator(train: bool, test: bool, generator_batch_size = 32, generator_imag
     # Create an instance of ImageDataGenerator for training data
     image_generator = ImageDataGenerator(
         rescale=1.0/255.0,  # Scale pixel values to the range [0, 1]
-        preprocessing_function=image_preprocessing,  # Custom preprocessing function
+        preprocessing_function= image_preprocessing if image_preprocessing else None,  # Custom preprocessing function
         rotation_range=40,      # Random rotation up to 40 degrees
         width_shift_range=0.2,  # Random horizontal shift of 20% of the width
         height_shift_range=0.2, # Random vertical shift of 20% of the height
@@ -121,7 +121,7 @@ def generator(train: bool, test: bool, generator_batch_size = 32, generator_imag
 
     validation_image_generator = ImageDataGenerator(
         rescale=1.0/255.0,  
-        preprocessing_function= image_preprocessing, 
+        preprocessing_function= image_preprocessing if image_preprocessing else None, 
         rotation_range=40,      
         width_shift_range=0.2,  
         height_shift_range=0.2, 
