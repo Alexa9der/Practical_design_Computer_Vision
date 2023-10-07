@@ -3,10 +3,10 @@ import pandas as pd
 import os
 import shutil
 import random
+from tqdm import tqdm
 
 import cv2 as cv
 import matplotlib.pyplot as plt
-
 
 import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator

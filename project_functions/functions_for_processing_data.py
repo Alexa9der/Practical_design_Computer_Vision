@@ -30,7 +30,50 @@ def image_preprocessing(image):
     
     return image.astype(np.float64)
 
-def validation_data_generators(path_to_Train="data/Train", path_to_Validation="data/Validation"):
+def edit_training_data(path_to_Train="data/Train", path_to_edited_data="data/edited_training_data"):
+    """
+    Preprocess and save edited training data to a new directory.
+
+    Args:
+        path_to_Train (str): Path to the original training data directory.
+        path_to_edited_data (str): Path to the directory where edited training data will be saved.
+
+    Returns:
+        None
+
+    This function preprocesses the original training data by applying custom preprocessing and saves
+    the edited data to a new directory structure similar to the original training directory.
+
+    Note:
+    - Ensure you have the required libraries (os, cv2, tqdm) imported before using this function.
+    - The custom preprocessing function ('image_preprocessing') is used to preprocess images.
+    """
+    name_folders = os.listdir(path_to_Train)
+    os.makedirs(path_to_edited_data, exist_ok=True)
+    
+    for name_folder in tqdm(name_folders):
+        path_to_train_data = os.path.join(path_to_Train, name_folder)
+        path_to_new_data = os.path.join(path_to_edited_data, name_folder)
+    
+        os.makedirs(path_to_new_data, exist_ok=True)
+        
+        path_images = os.listdir(path_to_train_data)
+    
+        for image in path_images:
+            train_path = os.path.join(path_to_train_data, image)
+            new_data_path = os.path.join(path_to_new_data, image)
+            
+            if not os.path.exists(new_data_path):
+                img = cv.imread(train_path)
+                
+                if img is not None:
+                    # Apply custom preprocessing to the image
+                    preprocessed_img = image_preprocessing(img)
+                    
+                    # Save the preprocessed image to the new directory
+                    cv.imwrite(new_data_path, preprocessed_img)
+
+def validation_data_generators(path_to_Train="data/edited_training_data", path_to_Validation="data/Validation"):
     """
     Split training data into training and validation sets by moving a portion of images.
 
