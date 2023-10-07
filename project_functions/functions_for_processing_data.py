@@ -30,6 +30,53 @@ def image_preprocessing(image):
     
     return image.astype(np.float64)
 
+def validation_data_generators(path_to_Train="data/Train", path_to_Validation="data/Validation"):
+    """
+    Split training data into training and validation sets by moving a portion of images.
+
+    Args:
+        path_to_Train (str): Path to the training data directory.
+        path_to_Validation (str): Path to the validation data directory.
+
+    Returns:
+        None
+
+    This function splits the training data into training and validation sets by moving a portion of the images.
+    It creates a validation directory structure similar to the training directory.
+
+    Note:
+    - Ensure you have the required libraries (os, shutil, random) imported before using this function.
+    - By default, it splits the data using a 80-20 ratio for training and validation.
+    - You can customize the split ratio by modifying the 'split_ratio' variable.
+    """
+    name_folders = os.listdir(path_to_Train)
+    
+    for name_folder in name_folders:
+        path_to_train_data = os.path.join(path_to_Train, name_folder)
+        path_to_validation_data = os.path.join(path_to_Validation, name_folder)
+    
+        # Create the validation directory if it doesn't exist
+        os.makedirs(path_to_validation_data, exist_ok=True)
+    
+        path_images = os.listdir(path_to_train_data)
+    
+        split_ratio = 0.2  # Customize the split ratio as needed
+        num_samples = len(path_images)
+        num_validation_samples = int(num_samples * split_ratio)
+        
+        # Randomly select validation images
+        validation_image_paths = random.sample(path_images, num_validation_samples)
+    
+        for image_path in validation_image_paths:
+            train_path = os.path.join(path_to_train_data, image_path)
+            validation_path = os.path.join(path_to_validation_data, image_path)
+    
+            # Check if the file exists before moving it
+            if os.path.exists(train_path):
+                shutil.move(train_path, validation_path)
+            else:
+                print(f"File not found: {train_path}")
+
 def generator(train: bool, test: bool, generator_batch_size = 32, generator_image_size = (128, 128) ):
     """
     Generate data generators for training and testing.
@@ -72,6 +119,25 @@ def generator(train: bool, test: bool, generator_batch_size = 32, generator_imag
         class_mode='categorical'  # For multi-class classification
     )
 
+    validation_image_generator = ImageDataGenerator(
+        rescale=1.0/255.0,  
+        preprocessing_function= image_preprocessing, 
+        rotation_range=40,      
+        width_shift_range=0.2,  
+        height_shift_range=0.2, 
+        shear_range=0.2,        
+        zoom_range=0.2,         
+        horizontal_flip=True,   
+        fill_mode='nearest'     
+    )
+    
+    validation_data_generator = validation_image_generator.flow_from_directory(
+        'data/Validation',
+        target_size=generator_image_size,
+        batch_size=generator_batch_size,
+        class_mode='categorical'  
+    )
+
     def test_data_generator():
         test_data_dir = 'data/Test'
         test_data_classes = pd.read_csv("data/Test.csv", usecols=["ClassId", "Path"])
@@ -98,8 +164,8 @@ def generator(train: bool, test: bool, generator_batch_size = 32, generator_imag
     test_dg = test_dg.batch(generator_batch_size)
 
     if train and test:
-        return train_data_generator, test_dg
+        return train_data_generator, validation_data_generator,  test_dg
     elif train:
-        return train_data_generator
+        return train_data_generator, validation_image_generator
     elif test:
         return test_dg
