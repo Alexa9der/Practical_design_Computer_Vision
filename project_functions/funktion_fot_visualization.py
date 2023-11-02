@@ -20,7 +20,7 @@ def image_show(image=None):
     """
     try:
         # Convert the BGR image to RGB format for display
-        plt.imshow(cv.cvtColor(image, cv.COLOR_BGR2RGB))
+        plt.imshow(image)
         plt.axis('off')
         plt.show()
     except:
@@ -57,3 +57,53 @@ def show_histogram(image):
             plt.setp(ax1.get_xticklabels(), visible=False)
     
     plt.show()
+
+def visualize_training_history(history , save = None, 
+                               path:str = "models_save", name:str = "history" ):
+    # Получение значений потерь, точности и F1
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+    accuracy = history.history['accuracy']
+    val_accuracy = history.history['val_accuracy']
+    
+
+    # Создание subplot
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex=True, figsize=(8, 12))
+    fig.subplots_adjust(hspace=0.5)
+
+    # График потерь
+    ax1.plot(loss, label='Training Loss')
+    ax1.plot(val_loss, label='Validation Loss')
+    ax1.set_title(f'Training and Validation Loss {name}')
+    ax1.set_xlabel('Epochs')
+    ax1.set_ylabel('Loss')
+    ax1.legend()
+
+    # График точности
+    ax2.plot(accuracy, label='Training Accuracy')
+    ax2.plot(val_accuracy, label='Validation Accuracy')
+    ax2.set_title(f'Training and Validation Accuracy {name}')
+    ax2.set_xlabel('Epochs')
+    ax2.set_ylabel('Accuracy')
+    ax2.legend()
+    
+    # График F1
+    try:
+        f1 = history.history['f1']
+        val_f1 = history.history['val_f1']
+        
+        ax3.plot(f1, label='Training F1')
+        ax3.plot(val_f1, label='Validation F1')
+        ax3.set_title(f'Training and Validation F1 Score {name}')
+        ax3.set_xlabel('Epochs')
+        ax3.set_ylabel('F1 Score')
+        ax3.legend()
+        
+    except KeyError as e :
+        print("e")
+
+    # Отобразить subplot
+    plt.show()
+
+    if save:
+        fig.savefig(f"{path}/{name}.png", format='png', dpi=300)

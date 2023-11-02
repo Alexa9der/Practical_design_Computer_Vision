@@ -28,7 +28,7 @@ def load_csv_file(file_list):
             # Read the CSV file and assign it as a global variable
             globals()[f"csv_{name_file[0]}"] = pd.read_csv(f"data/{file}")
 
-def loading_random_data(path="data/Train", amount=5, image_size=(128, 128)):
+def loading_random_data(path="data/Train", amount=5, image_size=(32, 32)):
     """
     Load random images from a specified directory path.
 

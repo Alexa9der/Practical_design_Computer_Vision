@@ -1,1 +1,0 @@
-url_for_data -> https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign/code
